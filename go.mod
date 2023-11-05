@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	github.com/google/uuid v1.4.0 // indirect
+	github.com/heetch/confita v0.10.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
