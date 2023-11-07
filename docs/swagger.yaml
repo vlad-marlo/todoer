@@ -335,6 +335,8 @@ paths:
           description: OK
         400:
           description: Bad Request
+      tags:
+        - Tasks
     get:
       description: Download dump of tasks from backend in json format
       produces:
@@ -347,8 +349,8 @@ paths:
               description: File upload
               type: string
               default: attachment; filename="tasks.json"
-
-
+      tags:
+        - Tasks
 
 schemes:
   - http
