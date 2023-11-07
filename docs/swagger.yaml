@@ -1,0 +1,333 @@
+basePath: /api/v1
+definitions:
+  TaskDTO:
+    properties:
+      id:
+        description: Unique identifier
+        type: string
+        example: 123e4567-e89b-12d3-a456-426614174000
+      task:
+        description: Task string
+        type: string
+        example: write swagger documentation
+      created_at:
+        example: 2023-01-02T03:00:00+03:00
+        description: UTC time in RFC3999 nano format
+        type: string
+      status:
+        description: |-
+          Status is used in sorting tasks.
+          All new tasks have status created by default.
+          Anyone can change any status of any task.
+        type: string
+        enum:
+          - created
+          - deleted
+          - in-work
+          - done
+        default: created
+    type: object
+  UpdateTaskRequest:
+    properties:
+      task:
+        description: verbose task description
+        type: string
+        example: write swagger documentation
+      status:
+        description: |-
+          Status is used in sorting tasks.
+          All new tasks have status created by default.
+          Anyone can change any status of any task.
+        enum:
+          - created
+          - deleted
+          - in-work
+          - done
+        type: string
+        default: created
+    type: object
+  CreateTaskRequest:
+    properties:
+      task:
+        description: verbose task description
+        type: string
+        example: write swagger documentation
+      status:
+        description: |-
+          Status is used in sorting tasks.
+          All new tasks have status created by default.
+          Anyone can change any status of any task.
+        enum:
+          - created
+          - deleted
+          - in-work
+          - done
+        type: string
+        default: created
+    required:
+      - task
+    type: object
+  CreateTaskResponse:
+    properties:
+      id:
+        description: Unique identifier
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      task:
+        description: Task string
+        type: string
+      created_at:
+        description: UTC time in RFC3999 nano format
+        type: string
+      status:
+        description: |-
+          Status is used in sorting tasks.
+          All new tasks have status created by default.
+          Anyone can change any status of any task.
+        type: string
+        enum:
+          - created
+          - deleted
+          - in-work
+          - done
+    type: object
+  GetTasksResponse:
+    properties:
+      count:
+        description: Total stored amount of tasks
+        type: integer
+        example: 3
+      next:
+        description: Next page in pagination
+        type: string
+        example: https://example.com/api/v1/tasks?offset=2&limit=1
+      previous:
+        description: Previous page in pagination
+        type: string
+        example: https://example.com/api/v1/tasks?offset=0&limit=1
+      result:
+        description: Resulted value of tasks
+        items:
+          $ref: '#/definitions/TaskDTO'
+        type: array
+    type: object
+  ErrorMessage:
+    properties:
+      endpoint:
+        description: full URI of requested endpoint
+        type: string
+        example: https://example.com/api/v1/ping
+      code:
+        description: http code
+        type: number
+        example: 500
+        maximum: 599
+        minimum: 100
+      status:
+        description: verbose error message
+        type: string
+        example: shkibidi server timed out
+    type: object
+host: localhost:8080
+info:
+  contact:
+    name: API Support
+  description: This is a todoer backend server.
+  title: TODOer API
+  version: "1.0"
+paths:
+  /tasks:
+    post:
+      summary: Create task
+      description: Adds a new task to storage.
+      consumes:
+        - application/json
+      operationId: tasks_create
+      parameters:
+        - description: Task object
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: '#/definitions/CreateTaskRequest'
+      produces:
+        - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/TaskDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorMessage'
+          examples:
+            Bad:
+              value:
+                endpoint: https://example.com/api/v1/tasks
+                code: 400
+                message: bad object was passed
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorMessage'
+          examples:
+            Bad:
+              value:
+                endpoint: https://example.com/api/v1/tasks
+                code: 400
+                message: bad object was passed
+      tags:
+        - Tasks
+    get:
+      summary: Get tasks
+      description: |-
+        Return a tasks with provided pagination and sort options.
+        If there is no tasks with provided options then empty array will be returned.
+      operationId: tasks_get
+      parameters:
+        - name: offset
+          in: query
+          required: false
+          description: pagination offset of returned objects
+          type: integer
+          default: 0
+        - name: limit
+          in: query
+          required: false
+          description: pagination limit of returned objects
+          type: integer
+          default: 5
+        - name: task
+          in: query
+          required: false
+          description: |-
+            Search parameter. Search tasks which contains provided string in it.
+          type: string
+        - name: status
+          in: query
+          required: false
+          description: |- 
+            Tasks filtrated with statuses in this param.
+            Statuses must be separated with commas.
+          default: created,deleted,in-work,done
+          type: string
+      tags:
+        - Tasks
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/GetTasksResponse'
+  /tasks/{task_id}:
+    get:
+      summary: Get task
+      description: Return a task object by ID.
+      produces:
+        - application/json
+      parameters:
+        - name: task_id
+          in: path
+          type: string
+          required: true
+      responses:
+        "200":
+          description: Returns a task by id
+          schema:
+            $ref: '#/definitions/TaskDTO'
+        "404":
+          description: There is no task with provided id
+          schema:
+            $ref: '#/definitions/ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorMessage'
+      tags:
+        - Tasks
+    patch:
+      summary: Update task
+      description: Delete a task object by ID.
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - name: task_id
+          in: path
+          type: string
+          required: true
+        - name: task
+          in: body
+          schema:
+            $ref: '#/definitions/UpdateTaskRequest'
+          required: true
+      responses:
+        "200":
+          description: Task was updated
+          schema:
+            $ref: '#/definitions/TaskDTO'
+        "404":
+          description: Task does not exists
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorMessage'
+      tags:
+        - Tasks
+    delete:
+      summary: Delete task
+      description: Delete a task object by ID.
+      produces:
+        - application/json
+      parameters:
+        - name: task_id
+          in: path
+          type: string
+          required: true
+      responses:
+        "204":
+          description: Task was deleted
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorMessage'
+      tags:
+        - Tasks
+  /tags/{id}/status:
+    post:
+      description: update task status
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: Task successful changed status
+          schema:
+            $ref: '#/definitions/TaskDTO'
+        "404":
+          description: Task with provided id does not exists
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorMessage'
+      parameters:
+        - name: task_id
+          in: path
+          type: string
+          required: true
+        - name: new_status
+          in: formData
+          type: string
+          required: true
+      tags:
+        - Tasks
+
+
+schemes:
+  - http
+  - https
+swagger: "2.0"
