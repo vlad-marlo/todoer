@@ -296,7 +296,7 @@ paths:
             $ref: '#/definitions/ErrorMessage'
       tags:
         - Tasks
-  /tags/{id}/status:
+  /tasks/{id}/status:
     post:
       description: update task status
       consumes:
@@ -325,6 +325,29 @@ paths:
           required: true
       tags:
         - Tasks
+  /tasks/file:
+    post:
+      description: Create tasks from file in json or xml format
+      consumes:
+        - multipart/form-data
+      responses:
+        201:
+          description: OK
+        400:
+          description: Bad Request
+    get:
+      description: Download dump of tasks from backend in json format
+      produces:
+        - text/plain
+      responses:
+        200:
+          description: OK
+          headers:
+            Content-Disposition:
+              description: File upload
+              type: string
+              default: attachment; filename="tasks.json"
+
 
 
 schemes:
