@@ -12,7 +12,7 @@ func NewServer() (*Server, error) {
 		BindAddr: "localhost",
 		BindPort: 8080,
 	}
-	if err := getConfitaLoader().Load(context.Background(), &cfg); err != nil {
+	if err := getConfitaLoader().Load(context.Background(), cfg); err != nil {
 		return nil, err
 	}
 	return cfg, nil
