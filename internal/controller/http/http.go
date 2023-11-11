@@ -76,11 +76,13 @@ func (ctrl *Controller) Stop(ctx context.Context) error {
 	return ctrl.router.Shutdown(ctx)
 }
 
-func (ctrl *Controller) handleErr(ctx echo.Context, err error) error {
+func (ctrl *Controller) handleErr(ctx echo.Context, err error, fields ...zap.Field) error {
 	var errMsg model.ErrorMessage
 	if !errors.As(err, &errMsg) {
 		errMsg.Status = fmt.Sprintf("unknown error: %v", err)
 		errMsg.Code = http.StatusInternalServerError
+		fields = append(fields, zap.Error(err))
+		ctrl.log.Error("got unexpected error", fields...)
 	}
 	return ctx.JSON(http.StatusInternalServerError, errMsg)
 }

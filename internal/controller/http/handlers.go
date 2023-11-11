@@ -7,6 +7,14 @@ import (
 	"net/http"
 )
 
+var (
+	ErrNotImplemented error = model.ErrorMessage{
+		Endpoint: "",
+		Code:     http.StatusNotImplemented,
+		Status:   "not implemented",
+	}
+)
+
 func (ctrl *Controller) HandleTasksCreate(ctx echo.Context) error {
 	var req model.CreateTaskRequest
 	if err := ctx.Bind(&req); err != nil {
@@ -109,9 +117,9 @@ func (ctrl *Controller) HandleTasksSetStatus(ctx echo.Context) error {
 }
 
 func (ctrl *Controller) HandleTasksUploadFromFile(ctx echo.Context) error {
-	panic("not implemented")
+	return ctrl.handleErr(ctx, ErrNotImplemented)
 }
 
 func (ctrl *Controller) HandleTasksDownloadToFile(ctx echo.Context) error {
-	panic("not implemented")
+	return ctrl.handleErr(ctx, ErrNotImplemented)
 }
