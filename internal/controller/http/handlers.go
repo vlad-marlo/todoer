@@ -78,7 +78,7 @@ func (ctrl *Controller) HandleTasksUpdate(ctx echo.Context) error {
 }
 
 func (ctrl *Controller) HandleTasksDelete(ctx echo.Context) error {
-	_, err := ctrl.srv.Update(ctx.Request().Context(), ctx.Param("task_id"), "", model.StatusDeleted)
+	err := ctrl.srv.Delete(ctx.Request().Context(), ctx.Param("task_id"))
 	if err != nil {
 		return ctrl.handleErr(ctx, err)
 	}
@@ -87,7 +87,25 @@ func (ctrl *Controller) HandleTasksDelete(ctx echo.Context) error {
 }
 
 func (ctrl *Controller) HandleTasksSetStatus(ctx echo.Context) error {
-	panic("not implemented")
+	var req struct {
+		Status string `json:"status" query:"status" form:"status"`
+		TaskID string `param:"task_id"`
+	}
+
+	if err := ctx.Bind(&req); err != nil {
+		return ctrl.handleErr(ctx, err)
+	}
+
+	status, err := model.ParseStatus(req.Status)
+	if err != nil {
+		return ctrl.handleErr(ctx, err)
+	}
+
+	resp, err := ctrl.srv.ChangeStatus(ctx.Request().Context(), req.TaskID, *status)
+	if err != nil {
+		return ctrl.handleErr(ctx, err)
+	}
+	return ctx.JSON(http.StatusOK, resp)
 }
 
 func (ctrl *Controller) HandleTasksUploadFromFile(ctx echo.Context) error {
