@@ -18,6 +18,7 @@ func NewServerOptions() fx.Option {
 		fx.Provide(
 			zap.NewProduction,
 			config.NewStorage,
+			config.NewServer,
 			StorageProvider,
 		),
 	)
