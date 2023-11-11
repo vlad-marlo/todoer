@@ -37,9 +37,39 @@ func (s *Service) Create(ctx context.Context, taskValue string, status model.Sta
 	}, nil
 }
 
+func (s *Service) getManyNoStatus(ctx context.Context, offset, limit int, task string) (*model.GetTasksResponse, error) {
+	panic("not implemented")
+}
+
+func (s *Service) getManyOneStatus(ctx context.Context, offset, limit int, task string, status model.Status) (*model.GetTasksResponse, error) {
+	panic("not implemented")
+}
+
+func (s *Service) getManyTwoStatus(ctx context.Context, offset, limit int, task string, status1, status2 model.Status) (*model.GetTasksResponse, error) {
+	panic("not implemented")
+}
+
+func (s *Service) getManyThreeStatuses(ctx context.Context, offset, limit int, task string, statuses ...model.Status) (*model.GetTasksResponse, error) {
+	panic("not implemented")
+}
+
 func (s *Service) GetMany(ctx context.Context, offset, limit int, task string, statuses ...model.Status) (*model.GetTasksResponse, error) {
-	//TODO implement me
-	panic("implement me")
+	switch len(statuses) {
+	case 0, 4:
+		return s.getManyNoStatus(ctx, offset, limit, task)
+	case 1:
+		return s.getManyOneStatus(ctx, offset, limit, task, statuses[0])
+	case 2:
+		return s.getManyTwoStatus(ctx, offset, limit, task, statuses[0], statuses[1])
+	case 3:
+		return s.getManyThreeStatuses(ctx, offset, limit, task, statuses...)
+	default:
+		return nil, model.ErrorMessage{
+			Endpoint: "/api/v1/tasks GET",
+			Code:     http.StatusBadRequest,
+			Status:   "unacceptable amount of statuses",
+		}
+	}
 }
 
 func (s *Service) GetOne(ctx context.Context, id string) (*model.TaskDTO, error) {
