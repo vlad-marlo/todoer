@@ -7,18 +7,22 @@ import (
 
 const Format = time.RFC3339Nano
 
-type Time time.Time
+type MyTime struct {
+	Time time.Time
+}
 
-func (t *Time) UnmarshalJSON(b []byte) error {
+// UnmarshalJSON supports json.Unmarshaler interface
+func (t *MyTime) UnmarshalJSON(b []byte) error {
 	parsed, err := time.Parse(Format, string(b))
 	if err != nil {
 		return fmt.Errorf("time: Parse: %w", err)
 	}
 
-	*t = Time(parsed)
+	t.Time = parsed
 	return nil
 }
 
-func (t *Time) MarshalJSON() ([]byte, error) {
-	return []byte((*time.Time)(t).Format(Format)), nil
+// MarshalJSON supports json.Marshaler interface
+func (t *MyTime) MarshalJSON() ([]byte, error) {
+	return []byte(t.Time.Format(Format)), nil
 }
