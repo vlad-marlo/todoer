@@ -2,6 +2,9 @@ package main
 
 import (
 	"github.com/vlad-marlo/todoer/internal/config"
+	"github.com/vlad-marlo/todoer/internal/controller"
+	"github.com/vlad-marlo/todoer/internal/controller/http"
+	"github.com/vlad-marlo/todoer/internal/service"
 	"github.com/vlad-marlo/todoer/internal/storage"
 	"github.com/vlad-marlo/todoer/internal/storage/memory"
 	"go.uber.org/fx"
@@ -19,6 +22,8 @@ func NewServerOptions() fx.Option {
 			zap.NewProduction,
 			config.NewStorage,
 			config.NewServer,
+			http.New,
+			fx.Annotate(service.New, fx.As(new(controller.Service))),
 			StorageProvider,
 		),
 	)
