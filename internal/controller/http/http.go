@@ -2,10 +2,12 @@ package http
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/vlad-marlo/todoer/internal/config"
 	"github.com/vlad-marlo/todoer/internal/controller"
+	"github.com/vlad-marlo/todoer/internal/model"
 	"go.uber.org/zap"
 	"net/http"
 )
@@ -72,4 +74,13 @@ func (ctrl *Controller) Start(_ context.Context) error {
 func (ctrl *Controller) Stop(ctx context.Context) error {
 	ctrl.log.Info("stopping http server", zap.String("bind_addr", fmt.Sprintf("%s:%d", ctrl.cfg.BindAddr, ctrl.cfg.BindPort)))
 	return ctrl.router.Shutdown(ctx)
+}
+
+func (ctrl *Controller) handleErr(ctx echo.Context, err error) error {
+	var errMsg model.ErrorMessage
+	if !errors.As(err, &errMsg) {
+		errMsg.Status = fmt.Sprintf("unknown error: %v", err)
+		errMsg.Code = http.StatusInternalServerError
+	}
+	return ctx.JSON(http.StatusInternalServerError, errMsg)
 }
