@@ -36,13 +36,9 @@ func (ctrl *Controller) HandleTasksGetMany(ctx echo.Context) error {
 
 	ctrl.log.Info("got request", zap.Any("request", req))
 
-	if req.Status != "" {
-
-		statuses, err = model.ParseManyStatuses(req.Status, ",")
-		if err != nil {
-			return ctrl.handleErr(ctx, err)
-		}
-
+	statuses, err = model.ParseManyStatuses(req.Status, ", ")
+	if err != nil {
+		return ctrl.handleErr(ctx, err)
 	}
 
 	resp, err = ctrl.srv.GetMany(ctx.Request().Context(), req.Offset, req.Limit, req.Task, statuses...)
@@ -54,7 +50,12 @@ func (ctrl *Controller) HandleTasksGetMany(ctx echo.Context) error {
 }
 
 func (ctrl *Controller) HandleTasksGetOne(ctx echo.Context) error {
-	panic("not implemented")
+	resp, err := ctrl.srv.GetOne(ctx.Request().Context(), ctx.Param("task_id"))
+	if err != nil {
+		return ctrl.handleErr(ctx, err)
+	}
+
+	return ctx.JSON(http.StatusOK, resp)
 }
 
 func (ctrl *Controller) HandleTasksUpdate(ctx echo.Context) error {
