@@ -11,7 +11,7 @@ type (
 	CreateTaskResponse struct {
 		ID        uuid.UUID `json:"id"`
 		Task      string    `json:"task"`
-		CreatedAt time.Time `json:""`
+		CreatedAt time.Time `json:"created_at"`
 	}
 	GetTasksResponse struct {
 		Count    int       `json:"count"`
