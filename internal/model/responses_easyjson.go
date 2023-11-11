@@ -161,7 +161,7 @@ func easyjson559270aeDecodeGithubComVladMarloTodoerInternalModel1(in *jlexer.Lex
 			}
 		case "task":
 			out.Task = string(in.String())
-		case "CreatedAt":
+		case "created_at":
 			if data := in.Raw(); in.Ok() {
 				in.AddError((out.CreatedAt).UnmarshalJSON(data))
 			}
@@ -190,7 +190,7 @@ func easyjson559270aeEncodeGithubComVladMarloTodoerInternalModel1(out *jwriter.W
 		out.String(string(in.Task))
 	}
 	{
-		const prefix string = ",\"CreatedAt\":"
+		const prefix string = ",\"created_at\":"
 		out.RawString(prefix)
 		out.Raw((in.CreatedAt).MarshalJSON())
 	}
