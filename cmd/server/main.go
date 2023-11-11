@@ -26,7 +26,17 @@ func NewServerOptions() fx.Option {
 			fx.Annotate(service.New, fx.As(new(controller.Service))),
 			StorageProvider,
 		),
+		fx.Invoke(
+			handleControllerLifecycle,
+		),
 	)
+}
+
+func handleControllerLifecycle(lc fx.Lifecycle, ctrl *http.Controller) {
+	lc.Append(fx.Hook{
+		OnStart: ctrl.Start,
+		OnStop:  ctrl.Stop,
+	})
 }
 
 func StorageProvider(log *zap.Logger, cfg *config.Storage) (storage.Storage, error) {
