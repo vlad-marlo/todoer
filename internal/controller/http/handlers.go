@@ -78,7 +78,12 @@ func (ctrl *Controller) HandleTasksUpdate(ctx echo.Context) error {
 }
 
 func (ctrl *Controller) HandleTasksDelete(ctx echo.Context) error {
-	panic("not implemented")
+	_, err := ctrl.srv.Update(ctx.Request().Context(), ctx.Param("task_id"), "", model.StatusDeleted)
+	if err != nil {
+		return ctrl.handleErr(ctx, err)
+	}
+
+	return ctx.NoContent(http.StatusNoContent)
 }
 
 func (ctrl *Controller) HandleTasksSetStatus(ctx echo.Context) error {
