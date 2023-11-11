@@ -1,9 +1,21 @@
 package http
 
-import "github.com/labstack/echo/v4"
+import (
+	"github.com/labstack/echo/v4"
+	"github.com/vlad-marlo/todoer/internal/model"
+	"net/http"
+)
 
 func (ctrl *Controller) HandleTasksCreate(ctx echo.Context) error {
-	panic("not implemented")
+	var req model.CreateTaskRequest
+	if err := ctx.Bind(&req); err != nil {
+		return err
+	}
+	resp, err := ctrl.srv.Create(ctx.Request().Context(), req.Value, req.Status)
+	if err != nil {
+		return ctrl.handleErr(ctx, err)
+	}
+	return ctx.JSON(http.StatusCreated, resp)
 }
 
 func (ctrl *Controller) HandleTasksGetMany(ctx echo.Context) error {
