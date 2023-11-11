@@ -59,7 +59,22 @@ func (ctrl *Controller) HandleTasksGetOne(ctx echo.Context) error {
 }
 
 func (ctrl *Controller) HandleTasksUpdate(ctx echo.Context) error {
-	panic("not implemented")
+	var req model.UpdateTaskRequest
+	if err := ctx.Bind(&req); err != nil {
+		return ctrl.handleErr(ctx, err)
+	}
+
+	status, err := model.ParseStatus(req.Status)
+	if err != nil {
+		return ctrl.handleErr(ctx, err)
+	}
+
+	resp, err := ctrl.srv.Update(ctx.Request().Context(), ctx.Param("task_id"), req.Task, *status)
+	if err != nil {
+		return ctrl.handleErr(ctx, err)
+	}
+
+	return ctx.JSON(http.StatusOK, resp)
 }
 
 func (ctrl *Controller) HandleTasksDelete(ctx echo.Context) error {
