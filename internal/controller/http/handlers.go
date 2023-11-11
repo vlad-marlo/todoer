@@ -3,6 +3,7 @@ package http
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/vlad-marlo/todoer/internal/model"
+	"go.uber.org/zap"
 	"net/http"
 )
 
@@ -19,7 +20,37 @@ func (ctrl *Controller) HandleTasksCreate(ctx echo.Context) error {
 }
 
 func (ctrl *Controller) HandleTasksGetMany(ctx echo.Context) error {
-	panic("not implemented")
+	var (
+		req = model.GetManyTasksRequest{
+			Limit: 10,
+		}
+		resp     *model.GetTasksResponse
+		statuses []model.Status
+		err      error
+	)
+
+	if err = ctx.Bind(&req); err != nil {
+		ctrl.log.Info("got error", zap.Error(err))
+		return ctrl.handleErr(ctx, err)
+	}
+
+	ctrl.log.Info("got request", zap.Any("request", req))
+
+	if req.Status != "" {
+
+		statuses, err = model.ParseManyStatuses(req.Status, ",")
+		if err != nil {
+			return ctrl.handleErr(ctx, err)
+		}
+
+	}
+
+	resp, err = ctrl.srv.GetMany(ctx.Request().Context(), req.Offset, req.Limit, req.Task, statuses...)
+	if err != nil {
+		return ctrl.handleErr(ctx, err)
+	}
+
+	return ctx.JSON(http.StatusOK, resp)
 }
 
 func (ctrl *Controller) HandleTasksGetOne(ctx echo.Context) error {

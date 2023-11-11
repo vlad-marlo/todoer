@@ -52,8 +52,8 @@ func (ctrl *Controller) configureRoutes() {
 	apiV1 := ctrl.router.Group("/api/v1")
 	tasks := apiV1.Group("/tasks")
 	{
-		tasks.POST("/", ctrl.HandleTasksCreate)
-		tasks.GET("/", ctrl.HandleTasksGetMany)
+		tasks.POST("", ctrl.HandleTasksCreate)
+		tasks.GET("", ctrl.HandleTasksGetMany)
 		tasks.GET("/:task_id", ctrl.HandleTasksGetOne)
 		tasks.PATCH("/:task_id", ctrl.HandleTasksUpdate)
 		tasks.DELETE("/:task_id", ctrl.HandleTasksDelete)

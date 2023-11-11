@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 )
 
 type Status string
@@ -17,7 +18,7 @@ const (
 )
 
 var (
-	ErrInvalidStatus = errors.New("invalid status")
+	ErrInvalidStatus = errors.New("invalid status (valid are: created, deleted, in-work, done)")
 )
 
 func statusValid(s Status) error {
@@ -26,6 +27,27 @@ func statusValid(s Status) error {
 		return nil
 	}
 	return fmt.Errorf("%w: %s", ErrInvalidStatus, s)
+}
+
+func ParseStatus(raw string) (*Status, error) {
+	s := Status(raw)
+	err := statusValid(s)
+	if err != nil {
+		return nil, err
+	}
+	return &s, nil
+}
+
+func ParseManyStatuses(raw, separator string) (res []Status, err error) {
+	var s *Status
+	for _, status := range strings.Split(raw, separator) {
+		s, err = ParseStatus(status)
+		if err != nil {
+			return nil, fmt.Errorf("%w: got %s", ErrInvalidStatus, status)
+		}
+		res = append(res, *s)
+	}
+	return
 }
 
 func (s *Status) UnmarshalJSON(data []byte) error {

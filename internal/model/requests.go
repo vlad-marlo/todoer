@@ -13,4 +13,10 @@ type (
 		Task   string `json:"task"`
 		Status string `json:"status"`
 	}
+	GetManyTasksRequest struct {
+		Offset int    `query:"offset" json:"-"`
+		Limit  int    `query:"limit" json:"-"`
+		Task   string `query:"task" json:"-"`
+		Status string `query:"status" json:"-"`
+	}
 )
