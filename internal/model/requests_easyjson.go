@@ -17,7 +17,7 @@ var (
 	_ easyjson.Marshaler
 )
 
-func easyjson11d1a9baDecodeGithubComVladMarloTodoerInternalModel(in *jlexer.Lexer, out *GetTasksResponse) {
+func easyjson11d1a9baDecodeGithubComVladMarloTodoerInternalModel(in *jlexer.Lexer, out *UpdateTaskRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -36,35 +36,10 @@ func easyjson11d1a9baDecodeGithubComVladMarloTodoerInternalModel(in *jlexer.Lexe
 			continue
 		}
 		switch key {
-		case "count":
-			out.Count = int(in.Int())
-		case "next":
-			out.Next = string(in.String())
-		case "previous":
-			out.Previous = string(in.String())
-		case "tasks":
-			if in.IsNull() {
-				in.Skip()
-				out.Tasks = nil
-			} else {
-				in.Delim('[')
-				if out.Tasks == nil {
-					if !in.IsDelim(']') {
-						out.Tasks = make([]TaskDTO, 0, 1)
-					} else {
-						out.Tasks = []TaskDTO{}
-					}
-				} else {
-					out.Tasks = (out.Tasks)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v1 TaskDTO
-					(v1).UnmarshalEasyJSON(in)
-					out.Tasks = append(out.Tasks, v1)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
+		case "task":
+			out.Task = string(in.String())
+		case "status":
+			out.Status = string(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -75,65 +50,44 @@ func easyjson11d1a9baDecodeGithubComVladMarloTodoerInternalModel(in *jlexer.Lexe
 		in.Consumed()
 	}
 }
-func easyjson11d1a9baEncodeGithubComVladMarloTodoerInternalModel(out *jwriter.Writer, in GetTasksResponse) {
+func easyjson11d1a9baEncodeGithubComVladMarloTodoerInternalModel(out *jwriter.Writer, in UpdateTaskRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"count\":"
+		const prefix string = ",\"task\":"
 		out.RawString(prefix[1:])
-		out.Int(int(in.Count))
+		out.String(string(in.Task))
 	}
 	{
-		const prefix string = ",\"next\":"
+		const prefix string = ",\"status\":"
 		out.RawString(prefix)
-		out.String(string(in.Next))
-	}
-	{
-		const prefix string = ",\"previous\":"
-		out.RawString(prefix)
-		out.String(string(in.Previous))
-	}
-	{
-		const prefix string = ",\"tasks\":"
-		out.RawString(prefix)
-		if in.Tasks == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
-			out.RawString("null")
-		} else {
-			out.RawByte('[')
-			for v2, v3 := range in.Tasks {
-				if v2 > 0 {
-					out.RawByte(',')
-				}
-				(v3).MarshalEasyJSON(out)
-			}
-			out.RawByte(']')
-		}
+		out.String(string(in.Status))
 	}
 	out.RawByte('}')
 }
 
 // MarshalJSON supports json.Marshaler interface
-func (v GetTasksResponse) MarshalJSON() ([]byte, error) {
+func (v UpdateTaskRequest) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
 	easyjson11d1a9baEncodeGithubComVladMarloTodoerInternalModel(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
-func (v GetTasksResponse) MarshalEasyJSON(w *jwriter.Writer) {
+func (v UpdateTaskRequest) MarshalEasyJSON(w *jwriter.Writer) {
 	easyjson11d1a9baEncodeGithubComVladMarloTodoerInternalModel(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
-func (v *GetTasksResponse) UnmarshalJSON(data []byte) error {
+func (v *UpdateTaskRequest) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
 	easyjson11d1a9baDecodeGithubComVladMarloTodoerInternalModel(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *GetTasksResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
+func (v *UpdateTaskRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjson11d1a9baDecodeGithubComVladMarloTodoerInternalModel(l, v)
 }
 func easyjson11d1a9baDecodeGithubComVladMarloTodoerInternalModel1(in *jlexer.Lexer, out *CreateTaskRequest) {
@@ -155,8 +109,12 @@ func easyjson11d1a9baDecodeGithubComVladMarloTodoerInternalModel1(in *jlexer.Lex
 			continue
 		}
 		switch key {
-		case "value":
+		case "task":
 			out.Value = string(in.String())
+		case "status":
+			if data := in.Raw(); in.Ok() {
+				in.AddError((out.Status).UnmarshalJSON(data))
+			}
 		default:
 			in.SkipRecursive()
 		}
@@ -172,9 +130,14 @@ func easyjson11d1a9baEncodeGithubComVladMarloTodoerInternalModel1(out *jwriter.W
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"value\":"
+		const prefix string = ",\"task\":"
 		out.RawString(prefix[1:])
 		out.String(string(in.Value))
+	}
+	{
+		const prefix string = ",\"status\":"
+		out.RawString(prefix)
+		out.String(string(in.Status))
 	}
 	out.RawByte('}')
 }

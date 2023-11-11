@@ -37,15 +37,19 @@ func easyjson79a0a577DecodeGithubComVladMarloTodoerInternalModel(in *jlexer.Lexe
 		}
 		switch key {
 		case "id":
-			out.ID = string(in.String())
+			if data := in.UnsafeBytes(); in.Ok() {
+				in.AddError((out.ID).UnmarshalText(data))
+			}
 		case "value":
 			out.Value = string(in.String())
 		case "created_at":
 			if data := in.Raw(); in.Ok() {
 				in.AddError((out.CreatedAt).UnmarshalJSON(data))
 			}
-		case "is_deleted":
-			out.IsDeleted = bool(in.Bool())
+		case "status":
+			if data := in.Raw(); in.Ok() {
+				in.AddError((out.Status).UnmarshalJSON(data))
+			}
 		default:
 			in.SkipRecursive()
 		}
@@ -63,7 +67,7 @@ func easyjson79a0a577EncodeGithubComVladMarloTodoerInternalModel(out *jwriter.Wr
 	{
 		const prefix string = ",\"id\":"
 		out.RawString(prefix[1:])
-		out.String(string(in.ID))
+		out.RawText((in.ID).MarshalText())
 	}
 	{
 		const prefix string = ",\"value\":"
@@ -76,9 +80,9 @@ func easyjson79a0a577EncodeGithubComVladMarloTodoerInternalModel(out *jwriter.Wr
 		out.Raw((in.CreatedAt).MarshalJSON())
 	}
 	{
-		const prefix string = ",\"is_deleted\":"
+		const prefix string = ",\"status\":"
 		out.RawString(prefix)
-		out.Bool(bool(in.IsDeleted))
+		out.String(string(in.Status))
 	}
 	out.RawByte('}')
 }
@@ -105,77 +109,4 @@ func (v *TaskDTO) UnmarshalJSON(data []byte) error {
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *TaskDTO) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjson79a0a577DecodeGithubComVladMarloTodoerInternalModel(l, v)
-}
-func easyjson79a0a577DecodeGithubComVladMarloTodoerInternalModel1(in *jlexer.Lexer, out *TaskCreateDTO) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "id":
-			out.ID = string(in.String())
-		case "value":
-			out.Value = string(in.String())
-		default:
-			in.SkipRecursive()
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjson79a0a577EncodeGithubComVladMarloTodoerInternalModel1(out *jwriter.Writer, in TaskCreateDTO) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	{
-		const prefix string = ",\"id\":"
-		out.RawString(prefix[1:])
-		out.String(string(in.ID))
-	}
-	{
-		const prefix string = ",\"value\":"
-		out.RawString(prefix)
-		out.String(string(in.Value))
-	}
-	out.RawByte('}')
-}
-
-// MarshalJSON supports json.Marshaler interface
-func (v TaskCreateDTO) MarshalJSON() ([]byte, error) {
-	w := jwriter.Writer{}
-	easyjson79a0a577EncodeGithubComVladMarloTodoerInternalModel1(&w, v)
-	return w.Buffer.BuildBytes(), w.Error
-}
-
-// MarshalEasyJSON supports easyjson.Marshaler interface
-func (v TaskCreateDTO) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson79a0a577EncodeGithubComVladMarloTodoerInternalModel1(w, v)
-}
-
-// UnmarshalJSON supports json.Unmarshaler interface
-func (v *TaskCreateDTO) UnmarshalJSON(data []byte) error {
-	r := jlexer.Lexer{Data: data}
-	easyjson79a0a577DecodeGithubComVladMarloTodoerInternalModel1(&r, v)
-	return r.Error()
-}
-
-// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *TaskCreateDTO) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson79a0a577DecodeGithubComVladMarloTodoerInternalModel1(l, v)
 }

@@ -1,18 +1,16 @@
+//go:generate easyjson -all requests.go
+
 package model
 
 type (
 	// CreateTaskRequest creates task to storage
 	CreateTaskRequest struct {
-		Value string `json:"value"`
+		Value  string `json:"task"`
+		Status Status `json:"status"`
 	}
-	// GetTasksResponse return slice of tasks and some other
-	// additional information.
-	GetTasksResponse struct {
-		Count    int       `json:"count"`
-		Next     string    `json:"next"`
-		Previous string    `json:"previous"`
-		Tasks    []TaskDTO `json:"tasks"`
+	// UpdateTaskRequest is request which makes available to update task.
+	UpdateTaskRequest struct {
+		Task   string `json:"task"`
+		Status string `json:"status"`
 	}
-	// CreateTaskResponse is returned when task was successfuly created.
-	CreateTaskResponse TaskDTO
 )

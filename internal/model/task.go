@@ -1,15 +1,14 @@
+//go:generate easyjson -all task.go
 package model
 
-import "time"
+import (
+	"github.com/google/uuid"
+	"time"
+)
 
 type TaskDTO struct {
-	ID        string    `json:"id"`
+	ID        uuid.UUID `json:"id"`
 	Value     string    `json:"value"`
 	CreatedAt time.Time `json:"created_at"`
-	IsDeleted bool      `json:"is_deleted"`
-}
-
-type TaskCreateDTO struct {
-	ID    string `json:"id"`
-	Value string `json:"value"`
+	Status    Status    `json:"status"`
 }
