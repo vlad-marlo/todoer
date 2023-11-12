@@ -67,3 +67,7 @@ func NewStorage() (*Storage, error) {
 
 	return s, nil
 }
+
+func (cfg *Storage) URI() string {
+	return cfg.DatabaseURI
+}

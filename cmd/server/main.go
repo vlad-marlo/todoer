@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/vlad-marlo/pkg/pgx"
+	"github.com/vlad-marlo/pkg/pgx/client"
 	"github.com/vlad-marlo/todoer/internal/config"
 	"github.com/vlad-marlo/todoer/internal/controller"
 	"github.com/vlad-marlo/todoer/internal/controller/http"
@@ -25,6 +27,7 @@ func NewServerOptions() fx.Option {
 			http.New,
 			fx.Annotate(service.New, fx.As(new(controller.Service))),
 			StorageProvider,
+			fx.Annotate(client.New, fx.As(new(pgx.Client))),
 		),
 		fx.Invoke(
 			handleControllerLifecycle,
