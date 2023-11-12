@@ -8,7 +8,7 @@ import (
 	"github.com/vlad-marlo/todoer/internal/controller/http"
 	"github.com/vlad-marlo/todoer/internal/service"
 	"github.com/vlad-marlo/todoer/internal/storage"
-	"github.com/vlad-marlo/todoer/internal/storage/memory"
+	pgxStorage "github.com/vlad-marlo/todoer/internal/storage/pgx"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 )
@@ -21,13 +21,13 @@ func main() {
 func NewServerOptions() fx.Option {
 	return fx.Options(
 		fx.Provide(
-			zap.NewProduction,
-			config.NewStorage,
-			config.NewServer,
 			http.New,
-			fx.Annotate(service.New, fx.As(new(controller.Service))),
-			StorageProvider,
+			config.NewServer,
+			zap.NewProduction,
 			fx.Annotate(client.New, fx.As(new(pgx.Client))),
+			fx.Annotate(service.New, fx.As(new(controller.Service))),
+			fx.Annotate(pgxStorage.New, fx.As(new(storage.Storage))),
+			fx.Annotate(config.NewStorage, fx.As(new(client.Config))),
 		),
 		fx.Invoke(
 			handleControllerLifecycle,
@@ -40,8 +40,4 @@ func handleControllerLifecycle(lc fx.Lifecycle, ctrl *http.Controller) {
 		OnStart: ctrl.Start,
 		OnStop:  ctrl.Stop,
 	})
-}
-
-func StorageProvider(log *zap.Logger, cfg *config.Storage) (storage.Storage, error) {
-	return memory.New(memory.WithZapLogger(log)), nil
 }

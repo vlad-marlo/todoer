@@ -25,5 +25,6 @@ func New(log *zap.Logger, cli pgx.Client) (*Storage, error) {
 		cli:  cli.P(),
 		task: newTask(log, cli.P()),
 	}
+	s.log.Info("initialized pgx storage")
 	return s, nil
 }

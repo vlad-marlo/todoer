@@ -13,10 +13,10 @@ type Service struct {
 	storage storage.Storage
 }
 
-func New(logger *zap.Logger) (*Service, error) {
+func New(logger *zap.Logger, repo storage.Storage) (*Service, error) {
 	logger.Info("initialized service")
 	return &Service{
 		log:     logger.With(zap.String("layer", "service")),
-		storage: nil,
+		storage: repo,
 	}, nil
 }

@@ -13,10 +13,12 @@ type TaskRepository struct {
 }
 
 func newTask(log *zap.Logger, pool *pgxpool.Pool) *TaskRepository {
-	return &TaskRepository{
+	repo := &TaskRepository{
 		log:  log.With(zap.String("entity", "task repository")),
 		pool: pool,
 	}
+	repo.log.Info("initialized task repository")
+	return repo
 }
 
 func (t *TaskRepository) Get(ctx context.Context, id string) (*model.TaskDTO, error) {
