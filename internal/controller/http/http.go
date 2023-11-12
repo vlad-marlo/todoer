@@ -25,14 +25,15 @@ func New(
 	cfg *config.Server,
 	service controller.Service,
 ) (*Controller, error) {
-	srv := &Controller{
-		router: echo.New(),
-		log:    logger,
-		cfg:    cfg,
-		srv:    service,
-	}
 	if logger == nil || cfg == nil || service == nil {
 		return nil, ErrNilReference
+	}
+
+	srv := &Controller{
+		router: echo.New(),
+		log:    logger.With(zap.String("layer", "transport")),
+		cfg:    cfg,
+		srv:    service,
 	}
 	srv.configure()
 	logger.Info("successful initialized server")

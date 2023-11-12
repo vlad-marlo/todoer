@@ -10,6 +10,10 @@ import (
 
 type Status string
 
+func (s *Status) String() string {
+	return string(*s)
+}
+
 const (
 	StatusCreated = "created"
 	StatusDeleted = "deleted"
@@ -48,6 +52,28 @@ func ParseManyStatuses(raw, separator string) (res []Status, err error) {
 		res = append(res, *s)
 	}
 	return
+}
+
+func (s *Status) SetStatusWhichDoesNotContainsInStatuses(statuses ...Status) {
+	statusMap := map[string]struct{}{
+		StatusInWork:  {},
+		StatusDeleted: {},
+		StatusCreated: {},
+		StatusDone:    {},
+	}
+	for _, status := range statuses {
+		if _, ok := statusMap[status.String()]; ok {
+			delete(statusMap, status.String())
+		}
+	}
+	var count int
+	for status := range statusMap {
+		count++
+		*s = Status(status)
+	}
+	if count != 1 {
+		panic(fmt.Sprintf("unexpected count of statuses: %v", statusMap))
+	}
 }
 
 func (s *Status) UnmarshalJSON(data []byte) error {

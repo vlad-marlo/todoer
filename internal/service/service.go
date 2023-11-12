@@ -14,8 +14,9 @@ type Service struct {
 }
 
 func New(logger *zap.Logger) (*Service, error) {
+	logger.Info("initialized service")
 	return &Service{
-		log:     logger,
+		log:     logger.With(zap.String("layer", "service")),
 		storage: nil,
 	}, nil
 }
