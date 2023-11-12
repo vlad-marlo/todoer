@@ -25,11 +25,25 @@ gen:
 
 .PHONY: migrate
 migrate:
-	tern migrate --c migrations/tern.conf --m migrations
+	tern migrate -c migrations/tern.conf -m migrations
 
 .PHONY: tm
 tm:
-	tern migrate --c migrations/tern.conf --m migrations --database todoer_test
+	tern migrate -c migrations/tern.conf -m migrations -database todoer_test
+
+.PHONY: dock
+dock:
+	docker build . --file=infra/server.dockerfile --tag="vladmarlo/todoer_backend:latest"
+	docker build . --file=infra/migrator.dockerfile --tag="vladmarlo/todoer_migrator:latest"
+
+.PHONY: dock/push
+dock/push: dock
+	docker push vladmarlo/todoer_backend:latest
+	docker push vladmarlo/todoer_migrator:latest
+
+.PHONY: dock/run
+dock/run:
+	docker-compose up --d
 
 .PHONY: lines
 lines:

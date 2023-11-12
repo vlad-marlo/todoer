@@ -1,34 +1,41 @@
 services:
   server:
-    build:
-      context: .
-      target: final
+    image: vladmarlo/todoer_backend:latest
     ports:
       - 8080:8080
+    restart: always
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_NAME=postgres
     depends_on:
       db:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+  migrate:
+    image: vladmarlo/todoer_migrator
+    restart: no
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_NAME=postgres
+    depends_on:
+      db:
+        condition: service_healthy
+
   db:
     image: postgres
     restart: always
     user: postgres
-    secrets:
-      - db-password
     volumes:
       - db-data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=example
-      - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
-    expose:
-      - 5432
+      - POSTGRES_DB=postgres
     healthcheck:
       test: [ "CMD", "pg_isready" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      interval: 1s
+      timeout: 1s
+      retries: 15
 volumes:
   db-data:
-secrets:
-  db-password:
-    file: db/password.txt
 

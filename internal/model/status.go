@@ -76,6 +76,20 @@ func (s *Status) SetStatusWhichDoesNotContainsInStatuses(statuses ...Status) {
 	}
 }
 
+func (s *Status) Int() int {
+	switch *s {
+	case StatusCreated:
+		return 1
+	case StatusInWork:
+		return 2
+	case StatusDone:
+		return 3
+	case StatusDeleted:
+		return 4
+	}
+	panic("unknown status")
+}
+
 func (s *Status) UnmarshalJSON(data []byte) error {
 	var raw string
 

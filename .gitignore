@@ -1,3 +1,4 @@
 .idea
 db/password.txt
 server
+.env
