@@ -196,19 +196,57 @@ func (s *Service) GetOne(ctx context.Context, id string) (*model.TaskDTO, error)
 	return task, nil
 }
 
-func (s *Service) Update(ctx context.Context, id string, task string, status model.Status) (*model.TaskDTO, error) {
-	//TODO implement me
-	panic("implement me")
+func (s *Service) Update(ctx context.Context, id string, value string, status model.Status) (*model.TaskDTO, error) {
+	if err := s.storage.Task().Update(ctx, id, value, status); err != nil {
+		return nil, &model.ErrorMessage{
+			Endpoint: fmt.Sprintf("/api/v1/tasks/%s UPDATE", id),
+			Code:     http.StatusBadRequest,
+			Status:   fmt.Sprintf("unexpected unknown error: %v", err),
+		}
+	}
+
+	task, err := s.storage.Task().Get(ctx, id)
+	if err != nil {
+		return nil, &model.ErrorMessage{
+			Endpoint: fmt.Sprintf("/api/v1/tasks/%s UPDATE", id),
+			Code:     http.StatusInternalServerError,
+			Status:   fmt.Sprintf("unexpected unknown error: %v", err),
+		}
+	}
+
+	return task, nil
 }
 
 func (s *Service) Delete(ctx context.Context, id string) error {
-	//TODO implement me
-	panic("implement me")
+	if err := s.storage.Task().ChangeStatus(ctx, id, model.StatusDeleted); err != nil {
+		return &model.ErrorMessage{
+			Endpoint: "/api/v1/%s DELETE",
+			Code:     http.StatusBadRequest,
+			Status:   "bad request",
+		}
+	}
+
+	return nil
 }
 
 func (s *Service) ChangeStatus(ctx context.Context, id string, status model.Status) (*model.TaskDTO, error) {
-	//TODO implement me
-	panic("implement me")
+	if err := s.storage.Task().ChangeStatus(ctx, id, status); err != nil {
+		return nil, &model.ErrorMessage{
+			Endpoint: "/api/v1/%s/status POST",
+			Code:     http.StatusBadRequest,
+			Status:   "bad request",
+		}
+	}
+
+	task, err := s.storage.Task().Get(ctx, id)
+	if err != nil {
+		return nil, &model.ErrorMessage{
+			Endpoint: fmt.Sprintf("/api/v1/%s/status POST", id),
+			Code:     http.StatusInternalServerError,
+			Status:   fmt.Sprintf("not found: %v", err),
+		}
+	}
+	return task, nil
 }
 
 func (s *Service) CreateMany(ctx context.Context, tasks []model.TaskDTO) error {
