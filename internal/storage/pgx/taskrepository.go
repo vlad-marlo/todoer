@@ -118,14 +118,19 @@ OFFSET $2 LIMIT $3;`
 	return t.getManyTasksByQuery(ctx, query, fmt.Sprintf("%%%s%", task), offset, limit)
 }
 
-func (t *TaskRepository) CreateMany(ctx context.Context, tasks []model.TaskDTO) error {
+func (t *TaskRepository) CreateMany(context.Context, []model.TaskDTO) error {
 	//TODO implement me
 	panic("implement me")
 }
 
 func (t *TaskRepository) ChangeStatus(ctx context.Context, id uuid.UUID, status model.Status) error {
-	//TODO implement me
-	panic("implement me")
+	const query = `UPDATE tasks
+SET status = $1
+WHERE id = $2;`
+	if _, err := t.pool.Exec(ctx, query, status.Int(), id); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (t *TaskRepository) PaginateWithStatus(ctx context.Context, offset int, limit int, status model.Status) ([]model.TaskDTO, error) {
