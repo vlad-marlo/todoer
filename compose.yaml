@@ -6,7 +6,7 @@ services:
     restart: always
     environment:
       - DATABASE_HOST=db
-      - DATABASE_NAME=postgres
+      - DATABASE_NAME=todoer
     depends_on:
       db:
         condition: service_healthy
@@ -18,7 +18,7 @@ services:
     restart: no
     environment:
       - DATABASE_HOST=db
-      - DATABASE_NAME=postgres
+      - DATABASE_NAME=todoer
     depends_on:
       db:
         condition: service_healthy
@@ -30,7 +30,8 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=postgres
+      - POSTGRES_DB=todoer
+      - POSTGRES_PASSWORD=postgres
     healthcheck:
       test: [ "CMD", "pg_isready" ]
       interval: 1s
@@ -38,4 +39,3 @@ services:
       retries: 15
 volumes:
   db-data:
-

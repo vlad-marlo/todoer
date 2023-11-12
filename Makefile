@@ -43,7 +43,7 @@ dock/push: dock
 
 .PHONY: dock/run
 dock/run:
-	docker-compose up --d
+	docker-compose up -d
 
 .PHONY: lines
 lines:
