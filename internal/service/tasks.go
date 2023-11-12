@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/vlad-marlo/todoer/internal/model"
 	"github.com/vlad-marlo/todoer/internal/storage"
+	"go.uber.org/zap"
 	"net/http"
 	"time"
 )
@@ -156,16 +157,21 @@ func (s *Service) getManyThreeStatuses(ctx context.Context, offset, limit int, t
 	return resp, nil
 }
 
-func (s *Service) GetMany(ctx context.Context, offset, limit int, task string, statuses ...model.Status) (*model.GetTasksResponse, error) {
+func (s *Service) GetMany(ctx context.Context, offset, limit int, task string, statuses ...model.Status) (resp *model.GetTasksResponse, err error) {
+	s.log.Info("got request", zap.Int("offset", offset), zap.Int("limit", limit), zap.String("task", task), zap.Any("statuses", statuses))
+	if len(statuses) == 1 && statuses[0] == "" {
+		statuses = []model.Status{}
+	}
+
 	switch len(statuses) {
 	case 0, 4:
-		return s.getManyNoStatus(ctx, offset, limit, task)
+		resp, err = s.getManyNoStatus(ctx, offset, limit, task)
 	case 1:
-		return s.getManyOneStatus(ctx, offset, limit, task, statuses[0])
+		resp, err = s.getManyOneStatus(ctx, offset, limit, task, statuses[0])
 	case 2:
-		return s.getManyTwoStatus(ctx, offset, limit, task, statuses[0], statuses[1])
+		resp, err = s.getManyTwoStatus(ctx, offset, limit, task, statuses[0], statuses[1])
 	case 3:
-		return s.getManyThreeStatuses(ctx, offset, limit, task, statuses...)
+		resp, err = s.getManyThreeStatuses(ctx, offset, limit, task, statuses...)
 	default:
 		return nil, model.ErrorMessage{
 			Endpoint: "/api/v1/tasks GET",
@@ -173,6 +179,13 @@ func (s *Service) GetMany(ctx context.Context, offset, limit int, task string, s
 			Status:   "unacceptable amount of statuses",
 		}
 	}
+	if err != nil {
+		return nil, err
+	}
+	if resp.Tasks == nil || len(resp.Tasks) == 0 {
+		resp.Tasks = []model.TaskDTO{}
+	}
+	return
 }
 
 func (s *Service) GetOne(ctx context.Context, id string) (*model.TaskDTO, error) {

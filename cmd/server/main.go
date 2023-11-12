@@ -32,6 +32,7 @@ func NewServerOptions() fx.Option {
 		fx.Invoke(
 			handleControllerLifecycle,
 		),
+		fx.NopLogger,
 	)
 }
 

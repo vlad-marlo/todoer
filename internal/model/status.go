@@ -87,7 +87,7 @@ func (s *Status) Int() int {
 	case StatusDeleted:
 		return 4
 	}
-	panic("unknown status")
+	return 0
 }
 
 func StatusFromInt(status int) Status {

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/vlad-marlo/todoer/internal/config"
 	"github.com/vlad-marlo/todoer/internal/controller"
 	"github.com/vlad-marlo/todoer/internal/model"
@@ -43,10 +44,11 @@ func New(
 func (ctrl *Controller) configure() {
 	ctrl.configureMiddleWares()
 	ctrl.configureRoutes()
+	ctrl.log.Info("configured all routes")
 }
 
 func (ctrl *Controller) configureMiddleWares() {
-
+	ctrl.router.Use(middleware.Logger())
 }
 
 //goland:noinspection ALL
@@ -67,7 +69,7 @@ func (ctrl *Controller) configureRoutes() {
 
 func (ctrl *Controller) Start(_ context.Context) error {
 	go func() {
-		ctrl.log.Error("starting http server", zap.Error(ctrl.router.Start(fmt.Sprintf("%s:%d", ctrl.cfg.BindAddr, ctrl.cfg.BindPort))))
+		ctrl.router.Start(fmt.Sprintf("%s:%d", ctrl.cfg.BindAddr, ctrl.cfg.BindPort))
 	}()
 	ctrl.log.Info("starting http server", zap.String("bind_addr", fmt.Sprintf("%s:%d", ctrl.cfg.BindAddr, ctrl.cfg.BindPort)))
 	return nil

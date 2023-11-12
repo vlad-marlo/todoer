@@ -44,7 +44,7 @@ func (ctrl *Controller) HandleTasksGetMany(ctx echo.Context) error {
 
 	ctrl.log.Info("got request", zap.Any("request", req))
 
-	statuses, err = model.ParseManyStatuses(req.Status, ", ")
+	statuses, err = model.ParseManyStatuses(req.Status, ",")
 	if err != nil {
 		return ctrl.handleErr(ctx, err)
 	}

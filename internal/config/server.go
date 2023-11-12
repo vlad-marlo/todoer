@@ -9,7 +9,7 @@ type Server struct {
 
 func NewServer() (*Server, error) {
 	cfg := &Server{
-		BindAddr: "localhost",
+		BindAddr: "",
 		BindPort: 8080,
 	}
 	if err := getConfitaLoader().Load(context.Background(), cfg); err != nil {

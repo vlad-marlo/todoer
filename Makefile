@@ -34,12 +34,12 @@ tm:
 .PHONY: dock
 dock:
 	docker build . --file=infra/server.dockerfile --tag="vladmarlo/todoer_backend:latest"
-	docker build . --file=infra/migrator.dockerfile --tag="vladmarlo/todoer_migrator:latest"
+	# docker build . --file=infra/migrator.dockerfile --tag="vladmarlo/todoer_migrator:latest"
 
 .PHONY: dock/push
 dock/push: dock
 	docker push vladmarlo/todoer_backend:latest
-	docker push vladmarlo/todoer_migrator:latest
+	# docker push vladmarlo/todoer_migrator:latest
 
 .PHONY: dock/run
 dock/run:
