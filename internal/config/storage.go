@@ -26,6 +26,7 @@ func (cfg *Storage) getPassword() error {
 	return nil
 }
 
+//goland:noinspection ALL
 func (cfg *Storage) load() error {
 
 	if err := getConfitaLoader().Load(context.Background(), cfg); err != nil {
@@ -52,6 +53,7 @@ func (cfg *Storage) setURI() {
 	}
 }
 
+//goland:noinspection ALL
 func NewStorage() (*Storage, error) {
 	s := &Storage{
 		DatabaseHost:     "localhost",

@@ -49,6 +49,7 @@ func (ctrl *Controller) configureMiddleWares() {
 
 }
 
+//goland:noinspection ALL
 func (ctrl *Controller) configureRoutes() {
 	apiV1 := ctrl.router.Group("/api/v1")
 	tasks := apiV1.Group("/tasks")
