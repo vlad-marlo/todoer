@@ -2,9 +2,11 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/vlad-marlo/todoer/internal/model"
+	"github.com/vlad-marlo/todoer/internal/storage"
 	"net/http"
 	"time"
 )
@@ -174,8 +176,24 @@ func (s *Service) GetMany(ctx context.Context, offset, limit int, task string, s
 }
 
 func (s *Service) GetOne(ctx context.Context, id string) (*model.TaskDTO, error) {
-	//TODO implement me
-	panic("implement me")
+	task, err := s.storage.Task().Get(ctx, id)
+	if err != nil {
+		if errors.Is(err, storage.ErrTaskDoesNotExists) {
+			return nil, &model.ErrorMessage{
+				Endpoint: fmt.Sprintf("/api/v1/tasks/%s", id),
+				Code:     http.StatusNotFound,
+				Status:   fmt.Sprintf("task with id=%s was not found", id),
+			}
+		}
+
+		return nil, &model.ErrorMessage{
+			Endpoint: fmt.Sprintf("/api/v1/tasks/%s", id),
+			Code:     http.StatusInternalServerError,
+			Status:   fmt.Sprintf("got unexpected error: %v", err),
+		}
+	}
+
+	return task, nil
 }
 
 func (s *Service) Update(ctx context.Context, id string, task string, status model.Status) (*model.TaskDTO, error) {

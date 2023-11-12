@@ -15,6 +15,7 @@ type Storage interface {
 type TaskRepository interface {
 	Create(ctx context.Context, task *model.TaskDTO) error
 	Count(ctx context.Context) (int, error)
+	Get(ctx context.Context, id string) (*model.TaskDTO, error)
 	Paginate(ctx context.Context, offset int, limit int) ([]model.TaskDTO, error)
 	PaginateFilter(ctx context.Context, offset int, limit int, task string) ([]model.TaskDTO, error)
 	PaginateWithStatus(ctx context.Context, offset int, limit int, status model.Status) ([]model.TaskDTO, error)
