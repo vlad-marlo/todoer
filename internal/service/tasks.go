@@ -250,6 +250,13 @@ func (s *Service) ChangeStatus(ctx context.Context, id string, status model.Stat
 }
 
 func (s *Service) CreateMany(ctx context.Context, tasks []model.TaskDTO) error {
-	//TODO implement me
-	panic("implement me")
+	err := s.storage.Task().CreateMany(ctx, tasks)
+	if err != nil {
+		return &model.ErrorMessage{
+			Endpoint: "/api/v1/tasks/file POST",
+			Code:     http.StatusBadRequest,
+			Status:   "bad request",
+		}
+	}
+	return nil
 }

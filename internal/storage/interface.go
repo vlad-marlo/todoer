@@ -18,6 +18,7 @@ type TaskRepository interface {
 	Create(ctx context.Context, task *model.TaskDTO) error
 	Update(ctx context.Context, id, value string, status model.Status) error
 	Paginate(ctx context.Context, offset int, limit int) ([]model.TaskDTO, error)
+	CreateMany(ctx context.Context, tasks []model.TaskDTO) error
 	ChangeStatus(ctx context.Context, id string, status model.Status) error
 	PaginateFilter(ctx context.Context, offset int, limit int, task string) ([]model.TaskDTO, error)
 	PaginateWithStatus(ctx context.Context, offset int, limit int, status model.Status) ([]model.TaskDTO, error)
