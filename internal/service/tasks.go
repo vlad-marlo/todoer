@@ -176,7 +176,15 @@ func (s *Service) GetMany(ctx context.Context, offset, limit int, task string, s
 }
 
 func (s *Service) GetOne(ctx context.Context, id string) (*model.TaskDTO, error) {
-	task, err := s.storage.Task().Get(ctx, id)
+	parsedID, err := uuid.Parse(id)
+	if err != nil {
+		return nil, &model.ErrorMessage{
+			Endpoint: fmt.Sprintf("/api/v1/tasks/%s", id),
+			Code:     http.StatusBadRequest,
+			Status:   fmt.Sprintf("bad id format: %s: %v", id, err),
+		}
+	}
+	task, err := s.storage.Task().Get(ctx, parsedID)
 	if err != nil {
 		if errors.Is(err, storage.ErrTaskDoesNotExists) {
 			return nil, &model.ErrorMessage{
@@ -197,7 +205,16 @@ func (s *Service) GetOne(ctx context.Context, id string) (*model.TaskDTO, error)
 }
 
 func (s *Service) Update(ctx context.Context, id string, value string, status model.Status) (*model.TaskDTO, error) {
-	if err := s.storage.Task().Update(ctx, id, value, status); err != nil {
+	parsedID, err := uuid.Parse(id)
+	if err != nil {
+		return nil, &model.ErrorMessage{
+			Endpoint: fmt.Sprintf("/api/v1/tasks/%s UPDATE", id),
+			Code:     http.StatusBadRequest,
+			Status:   fmt.Sprintf("bad id format: %s : %v", id, err),
+		}
+	}
+
+	if err = s.storage.Task().Update(ctx, parsedID, value, status); err != nil {
 		return nil, &model.ErrorMessage{
 			Endpoint: fmt.Sprintf("/api/v1/tasks/%s UPDATE", id),
 			Code:     http.StatusBadRequest,
@@ -205,7 +222,7 @@ func (s *Service) Update(ctx context.Context, id string, value string, status mo
 		}
 	}
 
-	task, err := s.storage.Task().Get(ctx, id)
+	task, err := s.storage.Task().Get(ctx, parsedID)
 	if err != nil {
 		return nil, &model.ErrorMessage{
 			Endpoint: fmt.Sprintf("/api/v1/tasks/%s UPDATE", id),
@@ -218,7 +235,16 @@ func (s *Service) Update(ctx context.Context, id string, value string, status mo
 }
 
 func (s *Service) Delete(ctx context.Context, id string) error {
-	if err := s.storage.Task().ChangeStatus(ctx, id, model.StatusDeleted); err != nil {
+	parsedID, err := uuid.Parse(id)
+	if err != nil {
+		return &model.ErrorMessage{
+			Endpoint: fmt.Sprintf("/api/v1/tasks/%s DELETE", id),
+			Code:     http.StatusBadRequest,
+			Status:   fmt.Sprintf("bad id format: %s : %v", id, err),
+		}
+	}
+
+	if err = s.storage.Task().ChangeStatus(ctx, parsedID, model.StatusDeleted); err != nil {
 		return &model.ErrorMessage{
 			Endpoint: "/api/v1/%s DELETE",
 			Code:     http.StatusBadRequest,
@@ -230,7 +256,16 @@ func (s *Service) Delete(ctx context.Context, id string) error {
 }
 
 func (s *Service) ChangeStatus(ctx context.Context, id string, status model.Status) (*model.TaskDTO, error) {
-	if err := s.storage.Task().ChangeStatus(ctx, id, status); err != nil {
+	parsedID, err := uuid.Parse(id)
+	if err != nil {
+		return nil, &model.ErrorMessage{
+			Endpoint: "/api/v1/%s/status POST",
+			Code:     http.StatusBadRequest,
+			Status:   fmt.Sprintf("bad id: %v", err),
+		}
+	}
+
+	if err = s.storage.Task().ChangeStatus(ctx, parsedID, status); err != nil {
 		return nil, &model.ErrorMessage{
 			Endpoint: "/api/v1/%s/status POST",
 			Code:     http.StatusBadRequest,
@@ -238,7 +273,7 @@ func (s *Service) ChangeStatus(ctx context.Context, id string, status model.Stat
 		}
 	}
 
-	task, err := s.storage.Task().Get(ctx, id)
+	task, err := s.storage.Task().Get(ctx, parsedID)
 	if err != nil {
 		return nil, &model.ErrorMessage{
 			Endpoint: fmt.Sprintf("/api/v1/%s/status POST", id),

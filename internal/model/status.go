@@ -90,6 +90,20 @@ func (s *Status) Int() int {
 	panic("unknown status")
 }
 
+func StatusFromInt(status int) Status {
+	switch status {
+	case 1:
+		return StatusCreated
+	case 2:
+		return StatusInWork
+	case 3:
+		return StatusDone
+	case 4:
+		return StatusDeleted
+	}
+	return StatusCreated
+}
+
 func (s *Status) UnmarshalJSON(data []byte) error {
 	var raw string
 

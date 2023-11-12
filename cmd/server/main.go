@@ -2,13 +2,13 @@ package main
 
 import (
 	"github.com/vlad-marlo/pkg/pgx"
-	"github.com/vlad-marlo/pkg/pgx/client"
 	"github.com/vlad-marlo/todoer/internal/config"
 	"github.com/vlad-marlo/todoer/internal/controller"
 	"github.com/vlad-marlo/todoer/internal/controller/http"
 	"github.com/vlad-marlo/todoer/internal/service"
 	"github.com/vlad-marlo/todoer/internal/storage"
 	pgxStorage "github.com/vlad-marlo/todoer/internal/storage/pgx"
+	"github.com/vlad-marlo/todoer/pkg/pgx/client"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 )
