@@ -69,7 +69,11 @@ func (ctrl *Controller) configureRoutes() {
 
 func (ctrl *Controller) Start(_ context.Context) error {
 	go func() {
-		ctrl.router.Start(fmt.Sprintf("%s:%d", ctrl.cfg.BindAddr, ctrl.cfg.BindPort))
+		ctrl.log.Error(
+			"got error while starting http server", zap.Error(
+				ctrl.router.Start(fmt.Sprintf("%s:%d", ctrl.cfg.BindAddr, ctrl.cfg.BindPort)),
+			),
+		)
 	}()
 	ctrl.log.Info("starting http server", zap.String("bind_addr", fmt.Sprintf("%s:%d", ctrl.cfg.BindAddr, ctrl.cfg.BindPort)))
 	return nil

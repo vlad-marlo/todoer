@@ -2,3 +2,4 @@
 db/password.txt
 server
 .env
+frontend/node_modules
